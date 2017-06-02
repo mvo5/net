@@ -134,6 +134,10 @@ func inBounds(inLen int, offset int, size int) bool {
 	return offset+size <= inLen
 }
 
+// VmEndianness controlls what byte order the bpf.VM is using.
+// The default is binary.BigEndian
+var VmEndianness binary.ByteOrder = binary.BigEndian
+
 func loadCommon(in []byte, offset int, size int) (uint32, bool) {
 	if !inBounds(len(in), offset, size) {
 		return 0, false
@@ -143,9 +147,9 @@ func loadCommon(in []byte, offset int, size int) (uint32, bool) {
 	case 1:
 		return uint32(in[offset]), true
 	case 2:
-		return uint32(binary.BigEndian.Uint16(in[offset : offset+size])), true
+		return uint32(VmEndianness.Uint16(in[offset : offset+size])), true
 	case 4:
-		return uint32(binary.BigEndian.Uint32(in[offset : offset+size])), true
+		return uint32(VmEndianness.Uint32(in[offset : offset+size])), true
 	default:
 		panic(fmt.Sprintf("invalid load size: %d", size))
 	}
